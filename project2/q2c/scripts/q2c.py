@@ -1,6 +1,5 @@
 import rospy
 import cv2
-import cv2.aruco as aruco
 import numpy as np
 
 fps = 30
@@ -14,8 +13,11 @@ def get_marker_points(marker_size):
     return marker_points
 
 def detect():
-    dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
     frame = cv2.imread('../data/sBXJulQ.jpeg')
+    detect_from_image(frame)
+
+def detect_from_image(frame):
+    dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
     parameters =  cv2.aruco.DetectorParameters()
     detector = cv2.aruco.ArucoDetector(dictionary, parameters)
     corners, ids, rejectedImgPoints = detector.detectMarkers(frame)
@@ -38,10 +40,6 @@ def detect():
             if retval:
                 cv2.drawFrameAxes(frame, camera_matrix, dist_coeffs, rvec, tvec, 7)
 
-    cv2.imshow("w1", frame)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
 def main():
     cv2.namedWindow("w1", cv2.WINDOW_AUTOSIZE)
     videoCaptureObject = cv2.VideoCapture(0, apiPreference=cv2.CAP_V4L2)
@@ -51,6 +49,7 @@ def main():
             while True:
                 ret, image = videoCaptureObject.read()
                 if ret:
+                    detect_from_image(image)
                     cv2.imshow("w1", image)
                     key = cv2.waitKey(frame_time_ms)
                     if key == 27: # exit on ESC
@@ -61,5 +60,5 @@ def main():
 
 if __name__=="__main__":
 
-    #main()
-    detect()
+    main()
+    #detect()
