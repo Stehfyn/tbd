@@ -30,7 +30,7 @@ def talker():
                     data1 = lidar.read(2) #distance          
                     data2 = lidar.read() #Intensity
                     distance = int.from_bytes(data1, byteorder="little")
-                    scanr.ranges.append(distance)
+                    scanr.ranges.append(distance*.001)
                     scanr.intensities.append(int.from_bytes(data2, "little"))
 
                 end_ang = int.from_bytes(lidar.read(2), byteorder='little')
