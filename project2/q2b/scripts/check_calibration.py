@@ -2,7 +2,7 @@
 
 ########## GLOBAL CONSTANTS ##########
 # Define the dimensions of checkerboard 
-CHECKERBOARD = (8, 6)
+CHECKERBOARD = (9, 6)
 
 # Define the number of calibration images before performing calibration
 IMAGE_THRESHOLD = 3
@@ -37,7 +37,7 @@ def callbackFunction(message):
 	# Bridge object to convert ROS message to CV2
 	bridgeObject = CvBridge()
 	convertedImage = bridgeObject.imgmsg_to_cv2(message)
-	convertedImage = cv2.resize(convertedImage, (0, 0), fx = 0.5, fy = 0.5)
+	#convertedImage = cv2.resize(convertedImage, (0, 0), fx = 0.5, fy = 0.5)
 	
 	# Grayscale image
 	grayColor = cv2.cvtColor(convertedImage, cv2.COLOR_BGR2GRAY)
@@ -91,7 +91,7 @@ def createMatrix():
 	objectp3d[0, :, :2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2) 
 	prev_img_shape = None
 	
-	# Loop through images 
+	# Loop through images
 	for j in checkerboardImages:
 		image = copy.copy(j)
 	
@@ -110,19 +110,29 @@ def createMatrix():
 		
 		# Append corners to 2d points
 		twoDpoints.append(corners2)
-
+		
 		# Draw and display the corners 
 		image = cv2.drawChessboardCorners(image, CHECKERBOARD, corners2, ret)
 		
-		cv2.imwrite('img', image) 
-		cv2.waitKey(0) 
 
-	cv2.destroyAllWindows() 
+		#cv2.imshow('img', image)
+		cv2.imwrite('calibration_data/calibration.png', image)
+		#cv2.waitKey(0) 
+
+	#scv2.destroyAllWindows() 
 
 	h, w = image.shape[:2]
 	
 	# Perform and return calibration matricies
 	ret, calibrationMatrix, distortionMatirx, rotationMatrix, translationMatrix = cv2.calibrateCamera(threeDpoints, twoDpoints, grayImage.shape[::-1], None, None)
+	
+	# Write calibartion and distortion matrix to files
+	with open('calibration_data/calibration.npy', 'wb') as f:
+		np.save(f, np.array(calibrationMatrix))
+		
+	with open('calibration_data/distortion.npy', 'wb') as f:
+		np.save(f, np.array(distortionMatirx))
+
 ##### END CREATE MATRIX FUNCTION #####
 
 	
@@ -140,8 +150,15 @@ rospy.init_node(subscriberNodeName, anonymous=True)
 # Arguments = (Topic name, message type, and function to be called when image is recieved)
 rospy.Subscriber(topicName, Image, callbackFunction)
 
+'''
+while True:
+	try:
+		pass
+	except:
+		break
+'''		
 # Spin keeps node active after init
 rospy.spin()
 
 # Destroy any open windows on exit
-cv2.destroyAllWindows()
+#cv2.destroyAllWindows()
