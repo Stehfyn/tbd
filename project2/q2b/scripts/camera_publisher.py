@@ -32,13 +32,14 @@ rospy.init_node(publisherNodeName, anonymous=True)
 
 # Create a publisher object
 # Specifies the name of the topic, the topic type, and buffer size
-publisher=rospy.Publisher(topicName, Image, queue_size=60)
+publisher=rospy.Publisher(topicName, Image, queue_size=1)
 
 # Rate of the transmitted messages
 rate = rospy.Rate(30)
 
 # Create video capture object
 videoCaptureObject=cv2.VideoCapture(0)
+videoCaptureObject.set(cv2.CAP_PROP_FPS, 30)
 
 # Create the bridge object
 # This will convert OpenCV Images to ROS image messages
@@ -48,37 +49,29 @@ bridgeObject=CvBridge()
 returnValue, capturedFrame = videoCaptureObject.read()
 
 # Loop for when node is running
+k = 0
+
+rospy.loginfo("Press y to take picture")
 while not rospy.is_shutdown():
 
-	# Prompt user for feedback
-	prompt = input("Show picture (y/n)? ")
-	
-	# Get image from camera
-	returnValue, capturedFrame = videoCaptureObject.read()
-	
-	# If image was retrieved successfully
-	if returnValue == True:
-		# Publish image on ROS topic
-		rospy.loginfo('Video frame captured and published')
-		imageToTransmit=bridgeObject.cv2_to_imgmsg(capturedFrame)
-		publisher.publish(imageToTransmit)
+	try:
+		# Prompt user for feedback
+		#prompt = input("Show picture (y/n)? ")
+		#prompt = input("Take picture? ")
+		# Get image from camera
+		returnValue, capturedFrame = videoCaptureObject.read()
 		
-		# Display image if prompted
-		if prompt != 'n':
-			resized = cv2.resize(capturedFrame, (0, 0), fx = 0.5, fy = 0.5)
-			cv2.imshow("Robot Vision", resized)
-			cv2.waitKey(WAIT_TIME)
-			cv2.destroyAllWindows()
 		
-	rate.sleep()
-
-
-
-
-
-
-
-
-
-
-
+		if (k == 121) and returnValue:
+			rospy.loginfo('Video frame captured and published')
+			imageToTransmit=bridgeObject.cv2_to_imgmsg(capturedFrame)
+			publisher.publish(imageToTransmit)
+		k = 0
+		
+		cv2.imshow("Robot Vision", capturedFrame)
+		k = cv2.waitKey(20)
+		
+	except KeyboardInterrupt:
+		break
+		
+cv2.destroyAllWindows()
