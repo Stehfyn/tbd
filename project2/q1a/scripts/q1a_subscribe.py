@@ -6,8 +6,12 @@ import rospy
 from sensor_msgs.msg import LaserScan
 from ScanContext.ScanContext import ScanContext
 
-g_ScanContext = None
+import inspect
+import os
 
+currentdir = os.path.dirname(os.path.abspath(__file__))
+
+g_ScanContext = None
 
 def callback(msg): #will interpret laser scan objects into its respective parts
     global g_ScanContext
@@ -25,7 +29,7 @@ def process_lidar(): # Will listen to the 'lidar topic' and the callback functio
     while g_ScanContext.still_scanning():
         pass
 
-    g_ScanContext.serialize()
+    g_ScanContext.serialize(currentdir)
     
 def main():
     process_lidar()

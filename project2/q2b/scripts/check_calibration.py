@@ -22,8 +22,7 @@ import numpy as np
 import copy
 
 # For sending messages in the form of images
-from sensor_msgs.msg import Image
-
+from sensor_msgs.msg import Image, Joy
 # Acts as a bridge to send cv2 images over ROS messages
 from cv_bridge import CvBridge
 import cv2
@@ -127,11 +126,11 @@ def createMatrix():
 	ret, calibrationMatrix, distortionMatirx, rotationMatrix, translationMatrix = cv2.calibrateCamera(threeDpoints, twoDpoints, grayImage.shape[::-1], None, None)
 	
 	# Write calibartion and distortion matrix to files
-	with open('calibration_data/calibration.npy', 'wb') as f:
-		np.save(f, np.array(calibrationMatrix))
+	#with open('calibration_data/calibration.npy', 'wb') as f:
+	np.savetxt('calibration.txt', np.array(calibrationMatrix))
 		
-	with open('calibration_data/distortion.npy', 'wb') as f:
-		np.save(f, np.array(distortionMatirx))
+	#with open('calibration_data/distortion.npy', 'wb') as f:
+	np.savetxt('distortion.txt', np.array(distortionMatirx))
 
 ##### END CREATE MATRIX FUNCTION #####
 
@@ -150,15 +149,15 @@ rospy.init_node(subscriberNodeName, anonymous=True)
 # Arguments = (Topic name, message type, and function to be called when image is recieved)
 rospy.Subscriber(topicName, Image, callbackFunction)
 
-'''
+
 while True:
 	try:
 		pass
 	except:
 		break
-'''		
+		
 # Spin keeps node active after init
-rospy.spin()
+#rospy.spin()
 
 # Destroy any open windows on exit
 #cv2.destroyAllWindows()

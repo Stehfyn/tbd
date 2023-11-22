@@ -13,9 +13,9 @@ WAIT_TIME = 3000
 
 # Imports
 import rospy
-
+import datetime
 # Send images as a message
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, Joy
 
 # This package acts as a bridge between OpenCV and ROS
 from cv_bridge import CvBridge
@@ -48,28 +48,42 @@ bridgeObject=CvBridge()
 # The first picture is very dark, take a picture at init to remove
 returnValue, capturedFrame = videoCaptureObject.read()
 
-# Loop for when node is running
-k = 0
+last_capture_time = None
+capture_delay = 1 / 2
 
-rospy.loginfo("Press y to take picture")
+def is_capture_delay_over():
+    global last_capture_time
+    global capture_delay
+
+    if last_capture_time != None:
+        dur = datetime.datetime.now() - last_capture_time
+        return dur.total_seconds() > capture_delay
+    else:
+        return True
+
+def controller_listener(data):
+    global videoCaptureObject
+    global last_capture_time
+
+    if data.buttons[0]:
+        rospy.loginfo('Button pressed')
+        if is_capture_delay_over():
+            rospy.loginfo('capture delay over')
+
+            returnValue, capturedFrame = videoCaptureObject.read()
+            if returnValue:
+                rospy.loginfo('Video frame captured and published')
+                imageToTransmit=bridgeObject.cv2_to_imgmsg(capturedFrame)
+                publisher.publish(imageToTransmit)
+                last_capture_time = datetime.datetime.now()
+
+
+rospy.loginfo("Press A to take picture")
+rospy.Subscriber("/joy", Joy, controller_listener)
 while not rospy.is_shutdown():
 
 	try:
-		# Prompt user for feedback
-		#prompt = input("Show picture (y/n)? ")
-		#prompt = input("Take picture? ")
-		# Get image from camera
-		returnValue, capturedFrame = videoCaptureObject.read()
-		
-		
-		if (k == 121) and returnValue:
-			rospy.loginfo('Video frame captured and published')
-			imageToTransmit=bridgeObject.cv2_to_imgmsg(capturedFrame)
-			publisher.publish(imageToTransmit)
-		k = 0
-		
-		cv2.imshow("Robot Vision", capturedFrame)
-		k = cv2.waitKey(20)
+		pass
 		
 	except KeyboardInterrupt:
 		break
