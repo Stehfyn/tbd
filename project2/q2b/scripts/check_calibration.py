@@ -114,7 +114,7 @@ def createMatrix():
 		# Draw and display the corners 
 		image = cv2.drawChessboardCorners(image, CHECKERBOARD, corners2, ret)
 		
-		cv2.imshow('img', image) 
+		cv2.imwrite('img', image) 
 		cv2.waitKey(0) 
 
 	cv2.destroyAllWindows() 

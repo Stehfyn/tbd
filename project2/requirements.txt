@@ -2,4 +2,5 @@ pyserial
 matplotlib
 numpy
 sklearn
-opencv
+opencv-python
+scikit-learn
