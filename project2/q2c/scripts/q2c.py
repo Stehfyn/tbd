@@ -2,6 +2,10 @@ import rospy
 import cv2
 import numpy as np
 
+
+CALIBRATION_PATH = 'calibration.npy'
+DISTORTION_PATH = 'distortion.npy'
+
 fps = 30
 frame_time_ms = int((1 / fps) * 100)
 
@@ -17,7 +21,7 @@ def detect():
     detect_from_image(frame)
 
 def detect_from_image(frame):
-    dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_250)
+    dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
     parameters =  cv2.aruco.DetectorParameters()
     detector = cv2.aruco.ArucoDetector(dictionary, parameters)
     corners, ids, rejectedImgPoints = detector.detectMarkers(frame)
@@ -29,10 +33,17 @@ def detect_from_image(frame):
             cv2.aruco.drawDetectedMarkers(frame, [corner], borderColor=id_color)
             cv2.putText(frame, str(id), tuple(corner[0][0].astype(int)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, id_color, 2)
     
+    '''
     camera_matrix = np.array([[1000, 0, frame.shape[1]/2],
                               [0, 1000, frame.shape[0]/2],
                               [0, 0, 1]], dtype=np.float32)
     dist_coeffs = np.zeros((4, 1))  # Assuming no lens distortion
+    '''
+    s = np.zeros((4, 1))  # Assuming no lens distortion
+    print(s)   
+    camera_matrix = np.load(CALIBRATION_PATH)
+    dist_coeffs = np.load(DISTORTION_PATH)
+    
 
     if len(corners) > 0:
         for i in range(len(ids)):
