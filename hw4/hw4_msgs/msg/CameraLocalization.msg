@@ -1,0 +1,2 @@
+float64 alignment_error
+float64 distance_separation
