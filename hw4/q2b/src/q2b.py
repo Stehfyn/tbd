@@ -22,6 +22,9 @@ def pose_gather(msg):
     print(msg.pose.pose) #Will print the pose of the robot 
     return msg.pose.pose
 
+def print_sigma(msg):
+    print(msg.CameraLocalization.distance_separation)
+
 def main():
     twist = Twist()
     print('Start')
@@ -34,6 +37,7 @@ def main():
         pub.publish(twist)
 
     ## Print current sigma
+    sigma = rospy.Subscriber('cam_local', CameraLocalization, print_sigma)
     
 
     
