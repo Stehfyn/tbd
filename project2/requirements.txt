@@ -4,3 +4,4 @@ numpy
 sklearn
 opencv-python
 scikit-learn
+pandas

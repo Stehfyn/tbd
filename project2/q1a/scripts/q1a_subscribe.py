@@ -29,7 +29,9 @@ def process_lidar(): # Will listen to the 'lidar topic' and the callback functio
     while g_ScanContext.still_scanning():
         pass
 
+    print(currentdir)
     g_ScanContext.serialize(currentdir)
+    g_ScanContext.serialize_as_df(currentdir)
     
 def main():
     process_lidar()

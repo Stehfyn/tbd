@@ -8,7 +8,7 @@ import math
 rospy.init_node('lidar')
 
 #Connect to the lidar over serial
-lidar = serial.Serial('/dev/ttyUSB1', baudrate= 230400)
+lidar = serial.Serial('/dev/ttyUSB0', baudrate= 230400)
 #Using the LD19 dev manual to extract specific information
 starter = 0x54
 pub = rospy.Publisher('lidar', LaserScan, queue_size=100)
@@ -56,5 +56,5 @@ def talker():
 if __name__ == '__main__':
     try:
         talker()
-    except rospy.ROSInterruptException:
+    except KeyboardInterrupt:
          pass

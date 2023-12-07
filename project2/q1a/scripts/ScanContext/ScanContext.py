@@ -2,13 +2,15 @@ import numpy
 from datetime import datetime
 import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN
+import pandas as pd
 
 class ScanContext:
     def __init__(self, duration_in_s = 5):
         self.data = numpy.array(None)
+        self.data_df = None
         self.scan_start = datetime.now()
         self.scan_duration = duration_in_s
-        self.range_mask = 4000
+        self.range_mask = 4
 
     def set_range_mask(self, range_mask):
         self.range_mask = range_mask
@@ -31,15 +33,32 @@ class ScanContext:
         if (self.data.ndim and self.data.size):
             numpy.savetxt(f"{parent}/LidarScanContext.txt", self.data)
 
+    def serialize_as_df(self, parent):
+        if (self.data.ndim and self.data.size):
+            dataframe = self.__to_dataframe__()
+            dataframe.to_csv(f"{parent}/LidarScanContext.csv")
+    
+    def __to_dataframe__(self):
+        if (self.data.ndim and self.data.size):
+            #return pd.DataFrame({'angles': self.data[:, 0], 'ranges': self.data[:, 1], 'intensity': self.data[:, 2]})
+            angles = self.data[:, 0]
+            ranges = self.data[:, 1]
+            mask = ranges <= 2.5
+            angles = angles[mask]
+            ranges = ranges[mask]
+
+            return pd.DataFrame({'angles': angles, 'ranges': ranges})
+
     def deserialize(self, path):
         self.data = numpy.loadtxt(path, dtype=float)
+        self.data_df = self.__to_dataframe__()
 
     def plot_point_cloud(self, write_to_disk=False, path=''):
         if (self.data.ndim and self.data.size):
             angles = self.data[:, 0]
             ranges = self.data[:, 1]
 
-            mask = ranges <= self.range_mask
+            mask = ranges <= 2.5
             angles = angles[mask]
             ranges = ranges[mask]
 
@@ -71,4 +90,7 @@ class ScanContext:
 
     def get_data(self):
         return self.data
+
+    def get_data_df(self):
+        return self.data_df
 

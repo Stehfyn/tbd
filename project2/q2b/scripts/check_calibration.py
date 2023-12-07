@@ -5,7 +5,7 @@
 CHECKERBOARD = (9, 6)
 
 # Define the number of calibration images before performing calibration
-IMAGE_THRESHOLD = 3
+IMAGE_THRESHOLD = 20
 
 # Array for checkerboard images
 checkerboardImages = []
@@ -16,19 +16,28 @@ distortionMatirx = []
 rotationMatrix = []
 translationMatrix = []
 
+import os
+currentdir = os.path.dirname(os.path.abspath(__file__))
+# PATH FOR FILE SAVES
+CALIBRATION_PATH = f'{currentdir}/calibration.npy'
+DISTORTION_PATH = f'{currentdir}/distortion.npy'
+IMAGE_PATH = f'{currentdir}/calibration.png'
+
 # IMPORTS
 import rospy
 import numpy as np
 import copy
 
 # For sending messages in the form of images
-from sensor_msgs.msg import Image, Joy
+from sensor_msgs.msg import Image
+
 # Acts as a bridge to send cv2 images over ROS messages
 from cv_bridge import CvBridge
 import cv2
 
 # Function that is called everytime a new message arrives
 def callbackFunction(message):
+	global checkerboardImages
 
 	# Feedback for image recieved
 	rospy.loginfo("image recieved")
@@ -55,6 +64,7 @@ def callbackFunction(message):
 		if len(checkerboardImages) % IMAGE_THRESHOLD == 0:
 			rospy.loginfo("Starting calibration")
 			createMatrix()
+			checkerboardImages = []
 			
 			# Print calibration Matrix and distortion Matrix to console
 			rospy.loginfo("Calibration Matrix:")
@@ -115,7 +125,8 @@ def createMatrix():
 		
 
 		#cv2.imshow('img', image)
-		cv2.imwrite('calibration_data/calibration.png', image)
+		#cv2.imwrite('calibration_data/calibration.png', image)
+		cv2.imwrite(IMAGE_PATH, image)
 		#cv2.waitKey(0) 
 
 	#scv2.destroyAllWindows() 
@@ -125,12 +136,15 @@ def createMatrix():
 	# Perform and return calibration matricies
 	ret, calibrationMatrix, distortionMatirx, rotationMatrix, translationMatrix = cv2.calibrateCamera(threeDpoints, twoDpoints, grayImage.shape[::-1], None, None)
 	
+	
 	# Write calibartion and distortion matrix to files
 	#with open('calibration_data/calibration.npy', 'wb') as f:
-	np.savetxt('calibration.txt', np.array(calibrationMatrix))
+	with open(CALIBRATION_PATH, 'wb') as f:
+		np.save(f, np.array(calibrationMatrix))
 		
 	#with open('calibration_data/distortion.npy', 'wb') as f:
-	np.savetxt('distortion.txt', np.array(distortionMatirx))
+	with open(DISTORTION_PATH, 'wb') as f:
+		np.save(f, np.array(distortionMatirx))
 
 ##### END CREATE MATRIX FUNCTION #####
 
@@ -149,15 +163,15 @@ rospy.init_node(subscriberNodeName, anonymous=True)
 # Arguments = (Topic name, message type, and function to be called when image is recieved)
 rospy.Subscriber(topicName, Image, callbackFunction)
 
-
+'''
 while True:
 	try:
 		pass
 	except:
 		break
-		
+'''		
 # Spin keeps node active after init
-#rospy.spin()
+rospy.spin()
 
 # Destroy any open windows on exit
 #cv2.destroyAllWindows()
