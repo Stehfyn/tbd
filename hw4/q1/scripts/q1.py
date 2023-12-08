@@ -76,8 +76,9 @@ def detect_from_image(frame):
         return False, []
 
 def main():
-    cv2.namedWindow("w1", cv2.WINDOW_AUTOSIZE)
-    videoCaptureObject = cv2.VideoCapture(-1)
+    #cv2.namedWindow("w1", cv2.WINDOW_AUTOSIZE)
+    #videoCaptureObject = cv2.VideoCapture(-1)
+    videoCaptureObject = cv2.VideoCapture(0)
     pub = rospy.Publisher('cam_local', CameraLocalization, queue_size=1)
     rospy.init_node('q1', anonymous=True)
     if videoCaptureObject.isOpened():
@@ -89,13 +90,13 @@ def main():
                     if success:
                         pub.publish(cam_local)
 
-                    cv2.imshow("w1", image)
+                    #cv2.imshow("w1", image)
                     key = cv2.waitKey(1)
                     if key == 27: # exit on ESC
                         break
         except:
             pass
-        cv2.destroyWindow("w1")
+        #cv2.destroyWindow("w1")
 
 if __name__=="__main__":
     main()

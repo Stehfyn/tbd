@@ -9,7 +9,7 @@ project(q2b)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
-  image_transport
+  #image_transport
   roscpp
   rospy
   sensor_msgs

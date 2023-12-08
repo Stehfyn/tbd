@@ -68,4 +68,18 @@ rosrun q1 q1.py
 ```
 *Note* - `q1` uses a named window from `opencv` which will not work when running on a server version of a linux distro, so modifications will be in order. Look to the latest version of `q2c` from our demo raspberry pi.
 
-Also, make sure to perform the necessary `sudo chmod 777 /dev/video{X}`'s to ensure the camera device has necessary permissions.s
+Also, make sure to perform the necessary `sudo chmod 777 /dev/video{X}`'s to ensure the camera device has necessary permissions.
+
+##Q2b Instructions
+
+Step 0 Rather than using Roscore command we will be using the following command to inititate Roscore
+This will also allow for motor control for the pioneer
+
+'''bash
+
+'''
+
+
+
+
+##Q2b
