@@ -76,10 +76,41 @@ Step 0 Rather than using Roscore command we will be using the following command 
 This will also allow for motor control for the pioneer
 
 '''bash
+roslaunch p2os_launch p2os_teleop_joy.launch
+'''
+This will throw an error since the controller is not connected, this is not a problem for this demo
 
+Once Roscore is running ensure that the following commands are executed in order.
+
+
+'''bash
+rosrun q1 q1.py
 '''
 
+'''bash
+rosrun q2 q2.py
+'''
 
+The robot should be in a position where the ARUco tag is in the camera's vision
 
 
 ##Q2b
+
+'''bash
+roslaunch p2os_launch p2os_teleop_joy.launch
+'''
+This will throw an error since the controller is not connected, this is not a problem for this demo
+
+Once Roscore is running ensure that the following commands are executed in order.
+
+
+'''bash
+rosrun q1 q1.py
+'''
+
+'''bash
+rosrun q2bhw4 q2bhw4.py
+'''
+
+With the camera directly facing the ARUco tag the robot will move towards the tag.
+
